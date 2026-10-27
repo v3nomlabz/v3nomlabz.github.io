@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>V3nom Labz — Precision 3D Printing & Instant Quotes</title>
+  <meta name="description" content="V3nom Labz is a precision 3D printing studio in Mumbai. Upload your STL, OBJ or 3MF model, check printability and get an instant price for FDM and resin prints.">
+  <meta name="theme-color" content="#060807">
+  <meta property="og:title" content="V3nom Labz — Precision 3D Printing">
+  <meta property="og:description" content="Upload your 3D model and get an instant quote. FDM & resin printing, prototypes to production.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="is-loading">
+
+  <!-- ============ PRELOADER ============ -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader__inner">
+      <svg class="preloader__logo" viewBox="0 0 48 48" aria-hidden="true">
+        <polygon class="pl-hex" points="24,3 42,13.5 42,34.5 24,45 6,34.5 6,13.5" />
+        <path class="pl-v" d="M14 15h5.5L24 27l4.5-12H34l-7.5 18h-5z" />
+        <path class="pl-drop" d="M24 35.2s-2.1 2.5-2.1 3.9a2.1 2.1 0 0 0 4.2 0c0-1.4-2.1-3.9-2.1-3.9z" />
+      </svg>
+      <div class="preloader__word">V3NOM<span>LABZ</span></div>
+      <div class="preloader__bar"><span id="preloader-bar"></span></div>
+      <div class="preloader__meta mono"><span>CALIBRATING NOZZLE</span><span id="preloader-pct">000%</span></div>
+    </div>
+  </div>
+
+  <div class="scroll-progress" id="scroll-progress"></div>
+  <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__dot"></span><span class="cursor__ring"></span></div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a href="#top" class="logo" aria-label="V3nom Labz home">
+        <svg class="logo__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <polygon points="24,3 42,13.5 42,34.5 24,45 6,34.5 6,13.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          <path d="M14 15h5.5L24 27l4.5-12H34l-7.5 18h-5z" fill="currentColor"/>
+          <path d="M24 35.2s-2.1 2.5-2.1 3.9a2.1 2.1 0 0 0 4.2 0c0-1.4-2.1-3.9-2.1-3.9z" fill="currentColor"/>
+        </svg>
+        <span class="logo__word">V<b>3</b>NOM <small>LABZ</small></span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#services">Services</a>
+        <a href="#process">Process</a>
+        <a href="#materials">Materials</a>
+        <a href="#showcase">Showcase</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a href="#quote" class="btn btn--primary btn--sm nav__cta magnetic"><span>Instant Quote</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <button class="nav__burger" id="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#quote">Instant Quote</a>
+      <a href="#materials">Materials</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <canvas class="hero__canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero__fallback" aria-hidden="true"></div>
+      <div class="hero__vignette" aria-hidden="true"></div>
+
+      <div class="container hero__inner">
+        <div class="hero__content">
+          <p class="eyebrow reveal-hero"><span class="pulse-dot"></span> Precision 3D printing studio</p>
+          <h1 class="hero__title">
+            <span class="line"><span class="line__inner">Lethal</span></span>
+            <span class="line"><span class="line__inner">precision.</span></span>
+            <span class="line"><span class="line__inner"><em class="glitch" data-text="Layer by layer.">Layer by layer.</em></span></span>
+          </h1>
+          <p class="hero__sub reveal-hero">V3nom Labz turns your 3D models into flawless FDM and resin prints, from one-off prototypes to production batches. Drop in a file and get a price in seconds.</p>
+          <div class="hero__ctas reveal-hero">
+            <a href="#quote" class="btn btn--primary magnetic"><span>Upload &amp; get price</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></a>
+            <a href="#materials" class="btn btn--ghost magnetic"><span>Explore materials</span></a>
+          </div>
+          <ul class="hero__chips reveal-hero mono">
+            <li>STL</li><li>OBJ</li><li>3MF</li><li>FDM</li><li>RESIN</li>
+          </ul>
+        </div>
+
+        <aside class="hud reveal-hero" aria-hidden="true">
+          <div class="hud__head"><span class="pulse-dot"></span> LIVE PRINT <span class="hud__job" id="hud-job">JOB_0001 · KNOT</span></div>
+          <div class="hud__row"><span>Layer</span><b id="hud-layer">000 / 000</b></div>
+          <div class="hud__row"><span>Nozzle</span><b id="hud-temp">215°C</b></div>
+          <div class="hud__row"><span>Bed</span><b>60°C</b></div>
+          <div class="hud__row"><span>Speed</span><b id="hud-speed">250 mm/s</b></div>
+          <div class="hud__bar"><span id="hud-bar"></span></div>
+          <div class="hud__pct"><b id="hud-pct">0</b>%</div>
+        </aside>
+      </div>
+
+      <div class="hero__stats container">
+        <div class="stat reveal-hero"><b class="counter" data-to="0.025" data-dec="3">0</b><span>mm finest layer</span></div>
+        <div class="stat reveal-hero"><b class="counter" data-to="8">0</b><span>pro materials</span></div>
+        <div class="stat reveal-hero"><b class="counter" data-to="256">0</b><span>mm build volume</span></div>
+        <div class="stat reveal-hero"><b class="counter" data-to="48">0</b><span>hr express option</span></div>
+      </div>
+
+      <a href="#marquee" class="scroll-cue" aria-label="Scroll down"><span></span></a>
+    </section>
+
+    <!-- ============ MARQUEE ============ -->
+    <div class="marquee" id="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>PLA</span><i>✦</i><span>PETG</span><i>✦</i><span>ABS</span><i>✦</i><span>ASA</span><i>✦</i><span>TPU</span><i>✦</i><span>NYLON-CF</span><i>✦</i><span>RESIN</span><i>✦</i><span>RAPID PROTOTYPING</span><i>✦</i><span>BATCH PRODUCTION</span><i>✦</i><span>COSPLAY &amp; PROPS</span><i>✦</i>
+        <span>PLA</span><i>✦</i><span>PETG</span><i>✦</i><span>ABS</span><i>✦</i><span>ASA</span><i>✦</i><span>TPU</span><i>✦</i><span>NYLON-CF</span><i>✦</i><span>RESIN</span><i>✦</i><span>RAPID PROTOTYPING</span><i>✦</i><span>BATCH PRODUCTION</span><i>✦</i><span>COSPLAY &amp; PROPS</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- ============ SERVICES ============ -->
+    <section class="section" id="services">
+      <div class="container">
+        <header class="section__head">
+          <p class="eyebrow reveal"><span class="eyebrow__num">01</span> What we print</p>
+          <h2 class="section__title split">Everything you can model, <em>we can make real.</em></h2>
+          <p class="section__lead reveal">One studio for the whole journey, from first prototype to finished product. Industrial-grade machines, tuned profiles and a human check on every single job.</p>
+        </header>
+
+        <div class="services">
+          <article class="card service tilt reveal">
+            <div class="service__icon"><svg viewBox="0 0 48 48"><path d="M8 38h32M12 38V22l12-8 12 8v16M18 38V28h12v10"/><path d="M24 14V6M20 8h8"/></svg></div>
+            <span class="service__num mono">S-01</span>
+            <h3>FDM Printing</h3>
+            <p>Strong, cost-effective parts in PLA, PETG, ABS, ASA, TPU and carbon-fibre nylon. Ideal for functional and large parts.</p>
+            <ul class="service__tags mono"><li>±0.1 mm</li><li>256 mm³</li><li>6 materials</li></ul>
+          </article>
+          <article class="card service tilt reveal">
+            <div class="service__icon"><svg viewBox="0 0 48 48"><path d="M24 6c6 8 12 14 12 21a12 12 0 0 1-24 0c0-7 6-13 12-21z"/><path d="M18 28a6 6 0 0 0 6 6"/></svg></div>
+            <span class="service__num mono">S-02</span>
+            <h3>Resin (SLA) Printing</h3>
+            <p>Silky-smooth surfaces at 25-micron layers. Miniatures, jewellery masters, dental models and fine detail work.</p>
+            <ul class="service__tags mono"><li>25 µm</li><li>Smooth</li><li>Tough resin</li></ul>
+          </article>
+          <article class="card service tilt reveal">
+            <div class="service__icon"><svg viewBox="0 0 48 48"><path d="M26 4 10 28h12l-2 16 16-24H24z"/></svg></div>
+            <span class="service__num mono">S-03</span>
+            <h3>Rapid Prototyping</h3>
+            <p>Iterate in days, not weeks. Express turnaround to validate fit, form and function before you commit to tooling.</p>
+            <ul class="service__tags mono"><li>48 h express</li><li>Iterations</li></ul>
+          </article>
+          <article class="card service tilt reveal">
+            <div class="service__icon"><svg viewBox="0 0 48 48"><path d="M6 40 30 16M30 16l4-10 8 8-10 4M6 40l4-2-2-2z"/><path d="M14 8h10M19 3v10"/></svg></div>
+            <span class="service__num mono">S-04</span>
+            <h3>3D Design &amp; CAD</h3>
+            <p>No model? No problem. Send a sketch, photo or broken part. We will design a print-ready file for you.</p>
+            <ul class="service__tags mono"><li>Sketch → CAD</li><li>Repairs</li></ul>
+          </article>
+          <article class="card service tilt reveal">
+            <div class="service__icon"><svg viewBox="0 0 48 48"><path d="M24 4 8 10v12c0 10 7 18 16 22 9-4 16-12 16-22V10z"/><path d="m17 24 5 5 9-10"/></svg></div>
+            <span class="service__num mono">S-05</span>
+            <h3>Cosplay &amp; Props</h3>
+            <p>Helmets, armour, replicas and collectibles, printed big, sanded smooth and primed ready for paint.</p>
+            <ul class="service__tags mono"><li>Large format</li><li>Primed</li></ul>
+          </article>
+          <article class="card service tilt reveal">
+            <div class="service__icon"><svg viewBox="0 0 48 48"><rect x="6" y="6" width="14" height="14" rx="2"/><rect x="28" y="6" width="14" height="14" rx="2"/><rect x="6" y="28" width="14" height="14" rx="2"/><rect x="28" y="28" width="14" height="14" rx="2"/></svg></div>
+            <span class="service__num mono">S-06</span>
+            <h3>Batch Production</h3>
+            <p>Short-run manufacturing with consistent quality and automatic bulk discounts of up to 20% off.</p>
+            <ul class="service__tags mono"><li>Up to −20%</li><li>QC checked</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROCESS ============ -->
+    <section class="section section--alt" id="process">
+      <div class="container">
+        <header class="section__head section__head--center">
+          <p class="eyebrow reveal"><span class="eyebrow__num">02</span> How it works</p>
+          <h2 class="section__title split">From file to finished part <em>in four steps.</em></h2>
+        </header>
+
+        <div class="process">
+          <svg class="process__line" viewBox="0 0 1000 4" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="0" y1="2" x2="1000" y2="2" class="process__track"/>
+            <line x1="0" y1="2" x2="1000" y2="2" class="process__fill" id="process-fill"/>
+          </svg>
+          <div class="step reveal">
+            <div class="step__badge"><span>01</span></div>
+            <h3>Upload</h3>
+            <p>Drop your STL, OBJ or 3MF. We analyse geometry, volume and printability instantly, right in your browser.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step__badge"><span>02</span></div>
+            <h3>Configure</h3>
+            <p>Pick material, colour, quality, infill and finish. Watch your price update live as you tweak.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step__badge"><span>03</span></div>
+            <h3>We print</h3>
+            <p>Our team reviews your file, optimises orientation and supports, then prints on tuned machines.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step__badge"><span>04</span></div>
+            <h3>Delivered</h3>
+            <p>Quality-checked, cleaned, carefully packed and delivered to your door or ready for pickup.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ QUOTE LAB ============ -->
+    <section class="section quote" id="quote">
+      <div class="container">
+        <header class="section__head">
+          <p class="eyebrow reveal"><span class="eyebrow__num">03</span> Instant quote lab</p>
+          <h2 class="section__title split">Upload your model. <em>Get your price.</em></h2>
+          <p class="section__lead reveal">We check size, wall integrity, overhangs and print time in real time. <strong>Your files never leave your device</strong> until you choose to send them.</p>
+        </header>
+
+        <div class="lab reveal" id="lab">
+          <!-- LEFT: viewer + analysis -->
+          <div class="lab__main">
+            <div class="viewer" id="q-viewer">
+              <div class="viewer__canvas" id="q-canvas"></div>
+
+              <!-- Dropzone (empty state) -->
+              <div class="dropzone" id="q-drop">
+                <div class="dropzone__scan" aria-hidden="true"></div>
+                <div class="dropzone__corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                <div class="dropzone__content">
+                  <div class="dropzone__icon" aria-hidden="true">
+                    <svg viewBox="0 0 64 64"><path d="M32 6 8 19v26l24 13 24-13V19z"/><path d="M8 19l24 13 24-13M32 32v26"/></svg>
+                    <span class="dropzone__arrow"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></span>
+                  </div>
+                  <h3>Drop your 3D models here</h3>
+                  <p>STL, OBJ or 3MF · up to 200 MB · multiple files supported</p>
+                  <div class="dropzone__actions">
+                    <label class="btn btn--primary" for="q-file"><span>Browse files</span></label>
+                    <button class="btn btn--ghost" id="q-sample" type="button"><span>Try a sample model</span></button>
+                  </div>
+                  <p class="dropzone__privacy mono"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> 100% local processing · private by design</p>
+                </div>
+                <input type="file" id="q-file" accept=".stl,.obj,.3mf" multiple hidden>
+              </div>
+
+              <!-- Viewer overlays -->
+              <div class="viewer__loading" id="q-loading" hidden>
+                <div class="loader-ring"></div>
+                <p class="mono" id="q-loading-text">ANALYSING GEOMETRY…</p>
+              </div>
+
+              <div class="viewer__dims mono" id="q-dims" hidden></div>
+
+              <div class="viewer__toolbar" id="q-toolbar" hidden>
+                <button data-act="rx" title="Rotate 90° around X" aria-label="Rotate X"><b>X</b><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg></button>
+                <button data-act="ry" title="Rotate 90° around Y" aria-label="Rotate Y"><b>Y</b><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg></button>
+                <button data-act="rz" title="Rotate 90° around Z" aria-label="Rotate Z"><b>Z</b><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg></button>
+                <span class="sep"></span>
+                <button data-act="overhang" title="Highlight overhangs (need supports)" aria-label="Show overhangs"><svg viewBox="0 0 24 24"><path d="M3 20h18M6 20V10h12M18 10l-4-6"/></svg></button>
+                <button data-act="wire" title="Wireframe" aria-label="Wireframe"><svg viewBox="0 0 24 24"><path d="M12 3 3 8v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8M3 16l9-3 9 3"/></svg></button>
+                <button data-act="spin" class="is-on" title="Auto-rotate" aria-label="Auto-rotate"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12a9 9 0 0 1 15.5-6.2M18 2v4h-4M6 22v-4h4"/></svg></button>
+                <button data-act="reset" title="Reset view" aria-label="Reset view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg></button>
+              </div>
+
+              <div class="viewer__layer" id="q-layer-wrap" hidden>
+                <span class="mono">LAYER<br>SCRUB</span>
+                <input type="range" id="q-layer" min="0" max="1000" value="1000" aria-label="Layer preview">
+                <span class="mono" id="q-layer-val">100%</span>
+              </div>
+
+              <div class="viewer__legend mono" id="q-legend" hidden><i></i> Overhang &gt; 45° · support needed</div>
+            </div>
+
+            <!-- Parts list -->
+            <div class="parts" id="q-parts-wrap" hidden>
+              <div class="parts__list" id="q-parts"></div>
+              <label class="parts__add" for="q-file" title="Add more files"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Add files</label>
+            </div>
+
+            <!-- Analysis -->
+            <div class="analysis" id="q-analysis" hidden>
+              <div class="analysis__score">
+                <svg viewBox="0 0 120 120" class="score-ring">
+                  <circle cx="60" cy="60" r="52" class="score-ring__track"/>
+                  <circle cx="60" cy="60" r="52" class="score-ring__fill" id="q-score-ring"/>
+                </svg>
+                <div class="score-ring__label"><b id="q-score">0</b><span>PRINTABILITY</span></div>
+              </div>
+              <ul class="checks" id="q-checks"></ul>
+              <dl class="metrics">
+                <div><dt>Dimensions</dt><dd id="s-dims">–</dd></div>
+                <div><dt>Volume</dt><dd id="s-vol">–</dd></div>
+                <div><dt>Surface</dt><dd id="s-area">–</dd></div>
+                <div><dt>Triangles</dt><dd id="s-tris">–</dd></div>
+                <div><dt>Est. weight</dt><dd id="s-weight">–</dd></div>
+                <div><dt>Est. print time</dt><dd id="s-time">–</dd></div>
+              </dl>
+            </div>
+          </div>
+
+          <!-- RIGHT: configuration + summary -->
+          <aside class="lab__side">
+            <div class="config is-disabled" id="q-config">
+              <div class="config__head">
+                <h3>Configure</h3>
+                <span class="mono config__part" id="c-partname">No model loaded</span>
+              </div>
+
+              <div class="field">
+                <label class="field__label">Material</label>
+                <div class="chips" id="c-material" role="radiogroup" aria-label="Material"></div>
+                <p class="field__hint" id="c-material-hint"></p>
+              </div>
+
+              <div class="field">
+                <label class="field__label">Colour <span class="mono" id="c-color-name"></span></label>
+                <div class="swatches" id="c-colors" role="radiogroup" aria-label="Colour"></div>
+              </div>
+
+              <div class="field">
+                <label class="field__label">Quality</label>
+                <div class="segmented" id="c-quality" role="radiogroup" aria-label="Quality"></div>
+              </div>
+
+              <div class="field" id="c-infill-wrap">
+                <label class="field__label" for="c-infill">Infill <b class="mono" id="c-infill-val">20%</b></label>
+                <input type="range" id="c-infill" min="10" max="100" step="5" value="20" class="range">
+                <div class="range__marks mono"><span>Light</span><span>Standard</span><span>Strong</span><span>Solid</span></div>
+              </div>
+
+              <div class="field">
+                <label class="field__label">Finish</label>
+                <div class="segmented" id="c-finish" role="radiogroup" aria-label="Finish"></div>
+              </div>
+
+              <div class="field field--row">
+                <div>
+                  <label class="field__label" for="c-scale">Scale</label>
+                  <div class="input-group">
+                    <input type="number" id="c-scale" min="1" max="1000" step="1" value="100" inputmode="numeric">
+                    <span>%</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field__label" for="c-unit">File units</label>
+                  <select id="c-unit" class="select">
+                    <option value="1">mm</option>
+                    <option value="10">cm</option>
+                    <option value="25.4">inch</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field__label">Quantity</label>
+                  <div class="stepper">
+                    <button type="button" data-step="-1" aria-label="Decrease quantity">−</button>
+                    <input type="number" id="c-qty" min="1" max="999" value="1" inputmode="numeric" aria-label="Quantity">
+                    <button type="button" data-step="1" aria-label="Increase quantity">+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="summary" id="q-summary">
+              <div class="summary__head">
+                <h3>Your quote</h3>
+                <span class="mono summary__ref" id="sum-ref">REF —</span>
+              </div>
+              <ul class="summary__lines" id="sum-lines">
+                <li class="summary__empty">Upload a model to see live pricing.</li>
+              </ul>
+              <dl class="summary__breakdown">
+                <div><dt>Material</dt><dd id="sum-material">–</dd></div>
+                <div><dt>Machine time</dt><dd id="sum-machine">–</dd></div>
+                <div><dt>Finishing</dt><dd id="sum-finish">–</dd></div>
+                <div class="is-discount"><dt>Bulk discount</dt><dd id="sum-discount">–</dd></div>
+                <div><dt>Setup &amp; review</dt><dd id="sum-setup">–</dd></div>
+                <div id="sum-express-row" hidden><dt>Express (+50%)</dt><dd id="sum-express-val">–</dd></div>
+              </dl>
+              <label class="toggle">
+                <input type="checkbox" id="sum-express">
+                <span class="toggle__ui"></span>
+                <span class="toggle__text"><b>Express production</b><small>Ships in 48 h · +50%</small></span>
+              </label>
+              <div class="summary__total">
+                <span>Estimated total</span>
+                <b id="sum-total">–</b>
+              </div>
+              <p class="summary__lead mono" id="sum-lead">Lead time: –</p>
+              <p class="summary__note" id="sum-note"></p>
+              <div class="summary__actions">
+                <button class="btn btn--primary btn--block" id="btn-wa" type="button" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11 11 0 0 0 3.2 17.3L2 22l4.8-1.3A11 11 0 0 0 20.5 3.5zM12 20a8.9 8.9 0 0 1-4.6-1.3l-.3-.2-2.9.8.8-2.8-.2-.3A9 9 0 1 1 12 20zm4.9-6.7c-.3-.1-1.6-.8-1.8-.9s-.4-.1-.6.1-.7.9-.8 1-.3.2-.6.1a7.3 7.3 0 0 1-3.6-3.1c-.3-.5.3-.4.8-1.4.1-.2 0-.3 0-.5l-.8-2c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 12 12 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.2-.3-.3-.6-.4z" fill="currentColor" stroke="none"/></svg>
+                  <span>Send quote on WhatsApp</span>
+                </button>
+                <div class="summary__row">
+                  <button class="btn btn--ghost btn--block" id="btn-mail" type="button" disabled><span>Email quote</span></button>
+                  <button class="btn btn--ghost btn--block" id="btn-copy" type="button" disabled><span>Copy summary</span></button>
+                </div>
+              </div>
+              <p class="summary__fine">Instant estimate. Final price is confirmed after a quick human review of your file. Attach your model file(s) when you send the quote.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MATERIALS ============ -->
+    <section class="section section--alt" id="materials">
+      <div class="container">
+        <header class="section__head">
+          <p class="eyebrow reveal"><span class="eyebrow__num">04</span> Material library</p>
+          <h2 class="section__title split">The right material <em>for every mission.</em></h2>
+        </header>
+
+        <div class="matlib reveal">
+          <div class="matlib__tabs" id="mat-tabs" role="tablist" aria-label="Materials"></div>
+          <div class="matlib__panel card" id="mat-panel" role="tabpanel">
+            <div class="matlib__visual" aria-hidden="true">
+              <div class="spool" id="mat-spool">
+                <div class="spool__ring"></div>
+                <div class="spool__core"></div>
+                <div class="spool__label mono" id="mat-spool-label">PLA</div>
+              </div>
+            </div>
+            <div class="matlib__info">
+              <div class="matlib__top">
+                <span class="badge mono" id="mat-tech">FDM</span>
+                <span class="matlib__price mono">from <b id="mat-price">–</b>/g</span>
+              </div>
+              <h3 id="mat-name">PLA</h3>
+              <p class="matlib__tagline" id="mat-tagline"></p>
+              <p class="matlib__desc" id="mat-desc"></p>
+              <div class="bars" id="mat-bars"></div>
+              <div class="matlib__colors" id="mat-colors"></div>
+              <a href="#quote" class="btn btn--ghost btn--sm" id="mat-cta"><span>Quote in this material</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SHOWCASE ============ -->
+    <section class="section" id="showcase">
+      <div class="container">
+        <header class="section__head section__head--split">
+          <div>
+            <p class="eyebrow reveal"><span class="eyebrow__num">05</span> From the lab</p>
+            <h2 class="section__title split">Real prints, <em>straight off the bed.</em></h2>
+          </div>
+          <p class="section__lead reveal">A few recent pieces from our Mumbai studio. Tap any photo to see it up close, or ask us for one of your own.</p>
+        </header>
+
+        <div class="work" id="work-grid">
+          <button class="work__item reveal" type="button" data-full="assets/work/articulated-robot.webp">
+            <img src="assets/work/articulated-robot-sm.webp" alt="Red and black articulated robot figure in a dynamic pose" width="640" height="852" loading="lazy" decoding="async">
+            <span class="work__meta"><span class="work__tag mono">01 · ARTICULATED FIGURE</span><strong class="work__title">Articulated Robot</strong><span class="work__desc">Fully poseable figure with print-in-place joints, finished in red and black.</span></span>
+          </button>
+          <button class="work__item reveal" type="button" data-full="assets/work/gt3-scale-model.webp">
+            <img src="assets/work/gt3-scale-model-sm.webp" alt="White GT3 race car scale model seen from the rear, with a large black wing" width="640" height="800" loading="lazy" decoding="async">
+            <span class="work__meta"><span class="work__tag mono">02 · SCALE MODEL</span><strong class="work__title">GT3 in Sunlight</strong><span class="work__desc">Detailed GT3 scale model with a crisp rear wing, diffuser and twin exhausts.</span></span>
+          </button>
+          <button class="work__item reveal" type="button" data-full="assets/work/samurai-silhouette.webp">
+            <img src="assets/work/samurai-silhouette-sm.webp" alt="Black geometric samurai silhouette sculpture wielding two katanas" width="640" height="852" loading="lazy" decoding="async">
+            <span class="work__meta"><span class="work__tag mono">03 · SCULPTURE</span><strong class="work__title">Samurai Silhouette</strong><span class="work__desc">Dual-katana samurai in low-poly line art, freestanding on its own base.</span></span>
+          </button>
+          <button class="work__item reveal" type="button" data-full="assets/work/warrior-rune-plaque.webp">
+            <img src="assets/work/warrior-rune-plaque-sm.webp" alt="Round black plaque with a warrior figure inside a ring of runes" width="640" height="960" loading="lazy" decoding="async">
+            <span class="work__meta"><span class="work__tag mono">04 · PLAQUE</span><strong class="work__title">Warrior Rune Plaque</strong><span class="work__desc">Circular display plaque: a warrior framed by a ring of carved runes.</span></span>
+          </button>
+          <button class="work__item reveal" type="button" data-full="assets/work/geometric-wolf.webp">
+            <img src="assets/work/geometric-wolf-sm.webp" alt="Black geometric low-poly wolf head mounted on a wall" width="640" height="853" loading="lazy" decoding="async">
+            <span class="work__meta"><span class="work__tag mono">05 · WALL ART</span><strong class="work__title">Geometric Wolf</strong><span class="work__desc">Low-poly wolf head in clean line art, made to hang straight on the wall.</span></span>
+          </button>
+          <button class="work__item reveal" type="button" data-full="assets/work/phoenix-emblem.webp">
+            <img src="assets/work/phoenix-emblem-sm.webp" alt="Geometric phoenix emblem above the V3nom Labz logo sign on a wall" width="640" height="853" loading="lazy" decoding="async">
+            <span class="work__meta"><span class="work__tag mono">06 · SIGNAGE</span><strong class="work__title">Phoenix Emblem</strong><span class="work__desc">Geometric phoenix and logo lettering, printed as one wall-mounted brand sign.</span></span>
+          </button>
+        </div>
+
+        <div class="showcase__sub">
+          <h3>Try it in the <em>quote lab.</em></h3>
+          <p class="section__lead reveal">Click any sample to load it into the quote lab and see exactly what it would cost to print.</p>
+        </div>
+
+        <div class="showcase" id="showcase-grid">
+          <button class="shot reveal" data-shape="gear" type="button">
+            <div class="shot__media"><img alt="Rendered 3D printed gear" data-render="gear"></div>
+            <div class="shot__meta"><span class="mono">01 · PETG</span><h3>Functional parts</h3><p>Gears, brackets, mounts and replacements that actually take load.</p></div>
+            <span class="shot__cta mono">Quote this →</span>
+          </button>
+          <button class="shot reveal" data-shape="vase" type="button">
+            <div class="shot__media"><img alt="Rendered twisted vase" data-render="vase"></div>
+            <div class="shot__meta"><span class="mono">02 · PLA SILK</span><h3>Home &amp; décor</h3><p>Parametric vases, lamps and planters with flawless spiral finishes.</p></div>
+            <span class="shot__cta mono">Quote this →</span>
+          </button>
+          <button class="shot reveal" data-shape="knot" type="button">
+            <div class="shot__media"><img alt="Rendered torus knot sculpture" data-render="knot"></div>
+            <div class="shot__meta"><span class="mono">03 · RESIN</span><h3>Art &amp; sculpture</h3><p>Impossible geometry that only additive manufacturing can produce.</p></div>
+            <span class="shot__cta mono">Quote this →</span>
+          </button>
+          <button class="shot reveal" data-shape="lattice" type="button">
+            <div class="shot__media"><img alt="Rendered lattice structure" data-render="lattice"></div>
+            <div class="shot__meta"><span class="mono">04 · NYLON-CF</span><h3>Lightweight lattices</h3><p>Strong, ultra-light structures for drones, robotics and R&amp;D.</p></div>
+            <span class="shot__cta mono">Quote this →</span>
+          </button>
+          <button class="shot reveal" data-shape="pawn" type="button">
+            <div class="shot__media"><img alt="Rendered chess piece miniature" data-render="pawn"></div>
+            <div class="shot__meta"><span class="mono">05 · TOUGH RESIN</span><h3>Miniatures &amp; games</h3><p>Tabletop pieces and collectibles with razor-sharp detail.</p></div>
+            <span class="shot__cta mono">Quote this →</span>
+          </button>
+          <button class="shot reveal" data-shape="bracket" type="button">
+            <div class="shot__media"><img alt="Rendered mechanical bracket" data-render="bracket"></div>
+            <div class="shot__meta"><span class="mono">06 · ASA</span><h3>Prototypes &amp; enclosures</h3><p>Fit-test housings and mechanical prototypes before tooling.</p></div>
+            <span class="shot__cta mono">Quote this →</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WHY US ============ -->
+    <section class="section section--alt" id="why">
+      <div class="container">
+        <header class="section__head section__head--center">
+          <p class="eyebrow reveal"><span class="eyebrow__num">06</span> Why V3nom Labz</p>
+          <h2 class="section__title split">Engineered obsession <em>in every layer.</em></h2>
+        </header>
+
+        <div class="bento">
+          <article class="card bento__item bento__item--wide reveal">
+            <div class="bento__graphic bento__graphic--price" aria-hidden="true">
+              <div class="ticker mono"><span>₹</span><b class="ticker__num" id="ticker">0</b></div>
+              <div class="mini-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+            <h3>Transparent, instant pricing</h3>
+            <p>No waiting days for a quote. Our engine calculates material, machine time and finishing from your actual geometry, so you see what you pay for.</p>
+          </article>
+          <article class="card bento__item reveal">
+            <div class="bento__graphic bento__graphic--target" aria-hidden="true"><span></span><span></span><span></span><b>±0.1</b></div>
+            <h3>Tight tolerances</h3>
+            <p>Calibrated machines and tuned profiles for parts that fit the first time.</p>
+          </article>
+          <article class="card bento__item reveal">
+            <div class="bento__graphic bento__graphic--clock" aria-hidden="true"><span class="hand"></span><b>48h</b></div>
+            <h3>Fast turnaround</h3>
+            <p>Standard jobs in 3–5 days, express in 48 hours.</p>
+          </article>
+          <article class="card bento__item reveal">
+            <div class="bento__graphic bento__graphic--layers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            <h3>Human-checked files</h3>
+            <p>Every file is reviewed by a real person, who fixes orientation, supports and problem areas before printing.</p>
+          </article>
+          <article class="card bento__item bento__item--wide reveal">
+            <div class="bento__graphic bento__graphic--lock" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><rect x="14" y="28" width="36" height="28" rx="5"/><path d="M22 28v-8a10 10 0 0 1 20 0v8"/><circle cx="32" cy="42" r="3"/></svg>
+              <span class="scanline"></span>
+            </div>
+            <h3>Your IP stays yours</h3>
+            <p>Models are analysed locally in your browser. Files you send us are used only for your job and are never shared or reused. NDAs available on request.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="section" id="faq">
+      <div class="container faq-wrap">
+        <header class="section__head">
+          <p class="eyebrow reveal"><span class="eyebrow__num">07</span> FAQ</p>
+          <h2 class="section__title split">Questions, <em>answered.</em></h2>
+          <p class="section__lead reveal">Can't find what you need? <a href="#contact" class="link">Talk to a human →</a></p>
+        </header>
+        <div class="faq" id="faq-list">
+          <details class="faq__item reveal">
+            <summary>Which file formats do you accept?<i></i></summary>
+            <div class="faq__body"><p>The instant quote lab supports <b>STL, OBJ and 3MF</b>. For STEP, IGES, Fusion or other CAD formats, send the file via WhatsApp or email and we will quote it manually, usually within a few hours.</p></div>
+          </details>
+          <details class="faq__item reveal">
+            <summary>How accurate is the instant price?<i></i></summary>
+            <div class="faq__body"><p>Very close. It's calculated from your model's real volume, surface area and height. Every order gets a quick human review, and if anything changes (for example, a model needs heavy supports), we confirm the final price with you before printing. Nothing is charged until you approve.</p></div>
+          </details>
+          <details class="faq__item reveal">
+            <summary>How long does it take?<i></i></summary>
+            <div class="faq__body"><p>Standard orders typically ship in <b>3–5 working days</b>. Express production ships in <b>48 hours</b>. Large batches and big cosplay pieces may take longer, and we always tell you upfront.</p></div>
+          </details>
+          <details class="faq__item reveal">
+            <summary>What if my model is bigger than the build volume?<i></i></summary>
+            <div class="faq__body"><p>We can split large models into interlocking sections and bond them after printing. The quote lab will flag oversize parts. Send them over and we will plan the split for you.</p></div>
+          </details>
+          <details class="faq__item reveal">
+            <summary>I don't have a 3D file. Can you help?<i></i></summary>
+            <div class="faq__body"><p>Absolutely. Our design service turns sketches, photos, drawings or broken parts into print-ready models. Reach out with what you have and we will scope it.</p></div>
+          </details>
+          <details class="faq__item reveal">
+            <summary>Which material should I choose?<i></i></summary>
+            <div class="faq__body"><p>PLA for looks and prototypes, PETG or ABS for functional parts, ASA for outdoor use, TPU for flexible parts, Nylon-CF for maximum stiffness, and resin for fine detail. Unsure? Mention your use-case and we will recommend the best fit.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT / CTA ============ -->
+    <section class="section contact" id="contact">
+      <div class="contact__glow" aria-hidden="true"></div>
+      <div class="container contact__inner">
+        <div class="contact__copy">
+          <p class="eyebrow reveal"><span class="eyebrow__num">08</span> Start a project</p>
+          <h2 class="contact__title split">Got an idea? <em>Let's inject it with reality.</em></h2>
+          <ul class="contact__list reveal">
+            <li><span class="mono">EMAIL</span><a data-contact="email" href="#">–</a></li>
+            <li><span class="mono">WHATSAPP</span><a data-contact="whatsapp" href="#" target="_blank" rel="noopener">–</a></li>
+            <li><span class="mono">STUDIO</span><span data-contact="location">–</span></li>
+            <li><span class="mono">HOURS</span><span data-contact="hours">–</span></li>
+          </ul>
+        </div>
+
+        <form class="contact__form card reveal" id="contact-form" novalidate>
+          <div class="form-grid">
+            <div class="float">
+              <input id="f-name" name="name" type="text" placeholder=" " required autocomplete="name">
+              <label for="f-name">Your name</label>
+            </div>
+            <div class="float">
+              <input id="f-email" name="email" type="email" placeholder=" " required autocomplete="email">
+              <label for="f-email">Email</label>
+            </div>
+            <div class="float">
+              <input id="f-phone" name="phone" type="tel" placeholder=" " autocomplete="tel">
+              <label for="f-phone">Phone (optional)</label>
+            </div>
+            <div class="float">
+              <select id="f-service" name="service" required>
+                <option value="FDM printing">FDM printing</option>
+                <option value="Resin printing">Resin printing</option>
+                <option value="Rapid prototyping">Rapid prototyping</option>
+                <option value="3D design / CAD">3D design / CAD</option>
+                <option value="Cosplay & props">Cosplay &amp; props</option>
+                <option value="Batch production">Batch production</option>
+              </select>
+              <label for="f-service" class="is-fixed">Service</label>
+            </div>
+            <div class="float float--full">
+              <textarea id="f-msg" name="message" rows="4" placeholder=" " required></textarea>
+              <label for="f-msg">Tell us about your project</label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn--primary magnetic" type="submit"><span>Send message</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            <button class="btn btn--ghost" type="button" id="f-wa"><span>Or WhatsApp us</span></button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <a href="#top" class="logo" aria-label="V3nom Labz home">
+          <svg class="logo__mark" viewBox="0 0 48 48" aria-hidden="true">
+            <polygon points="24,3 42,13.5 42,34.5 24,45 6,34.5 6,13.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
+            <path d="M14 15h5.5L24 27l4.5-12H34l-7.5 18h-5z" fill="currentColor"/>
+            <path d="M24 35.2s-2.1 2.5-2.1 3.9a2.1 2.1 0 0 0 4.2 0c0-1.4-2.1-3.9-2.1-3.9z" fill="currentColor"/>
+          </svg>
+          <span class="logo__word">V<b>3</b>NOM <small>LABZ</small></span>
+        </a>
+        <p>Precision 3D printing studio. Prototypes, parts and production, printed with obsession.</p>
+      </div>
+      <div class="footer__cols">
+        <div>
+          <h4 class="mono">Studio</h4>
+          <a href="#services">Services</a><a href="#process">Process</a><a href="#showcase">Showcase</a>
+        </div>
+        <div>
+          <h4 class="mono">Print</h4>
+          <a href="#quote">Instant quote</a><a href="#materials">Materials</a><a href="#faq">FAQ</a>
+        </div>
+        <div>
+          <h4 class="mono">Connect</h4>
+          <a data-contact="email" href="#">Email</a>
+          <a data-contact="whatsapp" href="#" target="_blank" rel="noopener">WhatsApp</a>
+          <a data-contact="instagram" href="#" target="_blank" rel="noopener">Instagram</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer__bottom mono">
+      <span>© <span id="year"></span> V3nom Labz. All rights reserved.</span>
+      <span>Designed to be printed.</span>
+    </div>
+    <div class="footer__mega" aria-hidden="true">V3NOM</div>
+  </footer>
+
+  <a href="#top" class="to-top" id="to-top" aria-label="Back to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></a>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ============ WORK LIGHTBOX ============ -->
+  <dialog class="lightbox" id="lightbox" aria-labelledby="lb-title">
+    <figure class="lightbox__inner">
+      <div class="lightbox__media"><img id="lb-img" alt=""></div>
+      <figcaption class="lightbox__cap">
+        <span class="mono" id="lb-tag"></span>
+        <h3 id="lb-title"></h3>
+        <p id="lb-desc"></p>
+        <a class="btn btn--primary" id="lb-wa" href="#" target="_blank" rel="noopener"><span>Get one like this on WhatsApp</span></a>
+        <span class="lightbox__count mono" id="lb-count"></span>
+      </figcaption>
+    </figure>
+    <button class="lightbox__btn lightbox__btn--close" type="button" data-lb="close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <button class="lightbox__btn lightbox__btn--prev" type="button" data-lb="prev" aria-label="Previous photo"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="lightbox__btn lightbox__btn--next" type="button" data-lb="next" aria-label="Next photo"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  </dialog>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+  <!-- Site -->
+  <script src="js/config.js"></script>
+  <script src="js/shapes.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/hero3d.js"></script>
+  <script src="js/quote.js"></script>
+  <script src="js/showcase.js"></script>
+</body>
+</html>
